@@ -1,0 +1,38 @@
+const express = require('express');
+const router = express.Router();
+
+const {
+  createOrder,
+  acceptOrder,
+  declineOrder,
+  getOrdersByrouteId,
+  getUserOrders,
+  getOrdersByPhoneNumber,
+  getPopularRoutes,
+  createPayment,
+  handlePaymentReturn,
+  createQRPayment,
+  checkQRPaymentStatus,
+  verifyQRPayment
+} = require('../controller/order_controller');
+
+router.post('/order/create', createOrder);
+router.put('/order/accept/:orderId', acceptOrder);
+router.put('/order/decline/:orderId', declineOrder);
+router.get('/order/route/:routeId', getOrdersByrouteId);
+router.get('/user/orders/:userId', getUserOrders);
+router.get('/order/phone-search/:phoneNumber', getOrdersByPhoneNumber);
+router.get('/order/popular-routes', getPopularRoutes);
+
+// Payment routes
+router.post('/payment/create', createPayment);
+router.get('/payment/vnpay-return', handlePaymentReturn);
+
+// QR Payment routes
+router.post('/payment/qr/create', createQRPayment);
+router.get('/payment/qr/status/:orderId', checkQRPaymentStatus);
+router.get('/payment/qr/verify', verifyQRPayment);
+
+
+
+module.exports = router;
