@@ -4,6 +4,22 @@ const axios = require('axios');
 
 const TRIP_SERVICE_URL = 'http://localhost:3002';
 
+router.put('/checkout/order/:routeId', async (req, res) => {
+    try {
+        const { routeId } = req.params;
+        console.log('Checking out orders for route ID:', routeId);
+
+        const response = await axios.put(`${TRIP_SERVICE_URL}/api/orders/order/checkout/${routeId}`, {}, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error('Error checking out orders:', error.message);
+        res.status(500).json({ message: "Failed to checkout orders" });
+    }
+});
+
 // Route to get passenger tickets from Trip Service
 router.get('/passenger/:passengerPhone/tickets', async (req, res) => {
     try {
@@ -124,4 +140,5 @@ router.get('/payment/qr/verify', async (req, res) => {
         }
     }
 });
+
 module.exports = router;

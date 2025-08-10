@@ -837,6 +837,103 @@ const getPopularRoutes = async (req, res) => {
   }
 };
 
+
+const checkoutRouteOrder = async (req, res) => {  
+  try {
+    const { routeId } = req.params;
+
+    // Validate routeId
+    if (!routeId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Route ID is required'
+      });
+    }
+
+    // Check if route exists
+    const route = await Route.findById(routeId);
+    if (!route) {
+      return res.status(404).json({
+        success: false,
+        message: 'Route not found'
+      });
+    }
+
+    // Find all orders for this route that are not cancelled
+    const orders = await Order.find({ 
+      routeId: routeId,
+      orderStatus: { $in: ['confirmed', 'paid'] }
+    });
+
+    if (orders.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'No orders found to checkout for this route',
+        data: {
+          routeId: routeId,
+          updatedOrdersCount: 0
+        }
+      });
+    }
+
+    // Update all eligible orders to 'finished' status
+    const updateResult = await Order.updateMany(
+      { 
+        routeId: routeId,
+        orderStatus: { $in: ['confirmed', 'paid'] }
+      },
+      { 
+        orderStatus: 'finished',
+        finishedAt: new Date()
+      }
+    );
+
+    // Reset available seats and clear booked seats array for the route
+    await Route.findByIdAndUpdate(
+      routeId,
+      { 
+        availableSeats: route.totalSeats, // Reset to total seats
+        bookedSeats: [] // Clear all booked seats
+      }
+    );
+
+    // Get the updated orders to return in response
+    const updatedOrders = await Order.find({ 
+      routeId: routeId,
+      orderStatus: 'finished'
+    }).select('_id fullName phone email orderStatus finishedAt');
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully checked out ${updateResult.modifiedCount} orders for route and reset seat availability`,
+      data: {
+        routeId: routeId,
+        routeCode: route.routeCode,
+        from: route.from,
+        to: route.to,
+        departureTime: route.departureTime,
+        updatedOrdersCount: updateResult.modifiedCount,
+        finishedOrders: updatedOrders,
+        resetSeats: {
+          totalSeats: route.totalSeats,
+          availableSeats: route.totalSeats,
+          bookedSeatsCleared: route.bookedSeats.length
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error checking out route orders:', error);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while checking out route orders',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+}
+
+
 // Create QR payment for VNPay
 const createQRPayment = async (req, res) => {
   try {
@@ -1176,5 +1273,6 @@ module.exports = {
   handlePaymentReturn,
   createQRPayment,
   checkQRPaymentStatus,
-  verifyQRPayment
+  verifyQRPayment,
+  checkoutRouteOrder
 };

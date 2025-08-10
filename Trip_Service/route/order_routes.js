@@ -11,6 +11,7 @@ const {
   getPopularRoutes,
   createPayment,
   handlePaymentReturn,
+  checkoutRouteOrder,
   createQRPayment,
   checkQRPaymentStatus,
   verifyQRPayment
@@ -23,7 +24,7 @@ router.get('/order/route/:routeId', getOrdersByrouteId);
 router.get('/user/orders/:userId', getUserOrders);
 router.get('/order/phone-search/:phoneNumber', getOrdersByPhoneNumber);
 router.get('/order/popular-routes', getPopularRoutes);
-
+router.put('/order/checkout/:routeId', checkoutRouteOrder);
 // Payment routes
 router.post('/payment/create', createPayment);
 router.get('/payment/vnpay-return', handlePaymentReturn);
@@ -32,6 +33,9 @@ router.get('/payment/vnpay-return', handlePaymentReturn);
 router.post('/payment/qr/create', createQRPayment);
 router.get('/payment/qr/status/:orderId', checkQRPaymentStatus);
 router.get('/payment/qr/verify', verifyQRPayment);
+
+
+
 
 
 

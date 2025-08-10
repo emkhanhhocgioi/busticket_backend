@@ -140,7 +140,7 @@ const OrderSchema = new mongoose.Schema({
   // Status
   orderStatus: {
     type: String,
-    enum: ['pending', 'confirmed', 'cancelled', 'paid'],
+    enum: ['pending', 'confirmed', 'cancelled', 'paid', 'finished'],
     default: 'pending'
   },
   
@@ -148,6 +148,10 @@ const OrderSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  finishedAt: {
+    type: Date,
+    default: null,
   }
 });
 
