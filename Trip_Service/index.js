@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const triprouter = require('./route/trip_routes');
 const orderrouter = require('./route/order_routes');
+const reviewrouter = require('./route/review_routes'); 
 const mongoose = require('./DTB/mongo'); // Import the mongoose connection
 app.use(express.json());
 
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/trips', triprouter);
 app.use('/api/orders', orderrouter);
+app.use('/api/reviews', reviewrouter);
 
 // Basic error handler
 app.use((err, req, res, next) => {

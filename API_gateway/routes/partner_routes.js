@@ -282,20 +282,6 @@ router.get('/user/orders/:userId', async (req, res) => {
         }
     }
 });
-router.put('/checkout/order/:routeId', async (req, res) => {
-    try {
-        const { routeId } = req.params;
-        console.log('Checking out orders for route ID:', routeId);
 
-        const response = await axios.put(`http://localhost:3002/api/orders/order/checkout/${routeId}`, {}, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        res.status(200).json(response.data);
-    } catch (error) {
-        console.error('Error checking out orders:', error.message);
-        res.status(500).json({ message: "Failed to checkout orders" });
-    }
-});
 
 module.exports = router;

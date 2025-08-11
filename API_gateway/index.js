@@ -7,6 +7,7 @@ const app = express();
 const router = require('./routes/user_route') ;
 const triprouter = require('./routes/partner_routes');
 const orderrouter = require('./routes/order_routes');
+const reviewrouter = require('./routes/review_routes');
 
 // CORS config
 app.use(cors({
@@ -19,7 +20,8 @@ app.use(limiter);
 app.use('/api',
   router,
   triprouter,
-  orderrouter
+  orderrouter,
+  reviewrouter
 );
 
 
