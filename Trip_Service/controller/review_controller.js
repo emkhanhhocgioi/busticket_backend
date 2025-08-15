@@ -1,4 +1,6 @@
 const Review = require('../model/review_model');
+const User = require('../model/user_account');
+const Route = require('../model/trip_model');
 const mongoose = require('mongoose');
 
 // Tạo review mới
@@ -75,7 +77,7 @@ const getAllReviews = async (req, res) => {
 
     const reviews = await Review.find(filter)
       .populate('userId', 'name email')
-      .populate('routeId', 'departure destination')
+      .populate('routeId', 'from to routeCode price')
       .sort({ timeCreate: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -287,7 +289,7 @@ const updateReview = async (req, res) => {
       updateData,
       { new: true, runValidators: true }
     ).populate('userId', 'name email')
-     .populate('routeId', 'departure destination');
+     .populate('routeId', 'from to routeCode price');
 
     res.status(200).json({
       success: true,
@@ -406,7 +408,7 @@ const toggleApproveReview = async (req, res) => {
       },
       { new: true }
     ).populate('userId', 'name email')
-     .populate('routeId', 'departure destination');
+     .populate('routeId', 'from to routeCode price');
 
     res.status(200).json({
       success: true,

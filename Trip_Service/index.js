@@ -4,11 +4,21 @@ const app = express();
 const triprouter = require('./route/trip_routes');
 const orderrouter = require('./route/order_routes');
 const reviewrouter = require('./route/review_routes'); 
-const mongoose = require('./DTB/mongo'); // Import the mongoose connection
+const notificationRouter = require('./route/notification_routes');
+const mongoose = require('./DTB/mongo');
+const http = require("http");
+const WebSocket = require("ws");
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+const {onConnection} = require('./controller/websocketcontroller');
+wss.on("connection", onConnection);
+
 app.use(express.json());
 
 app.use(cors({
-  origin: ['http://localhost:3001'],
+  origin: ['http://localhost:3001','http://localhost:3000'],
   credentials: true
 }));
 
@@ -20,6 +30,7 @@ app.get('/', (req, res) => {
 app.use('/api/trips', triprouter);
 app.use('/api/orders', orderrouter);
 app.use('/api/reviews', reviewrouter);
+app.use('/api/notifications', notificationRouter);
 
 // Basic error handler
 app.use((err, req, res, next) => {
@@ -35,6 +46,6 @@ mongoose.connection.on('error', (err) => {
     console.error('MongoDB connection error:', err);
 });
 
-app.listen(3002, () => {
-  console.log('Trip Service running on port 3002');
+server.listen(3002, () => {
+  console.log('HTTP & WebSocket server running on port 3002');
 });

@@ -44,8 +44,8 @@ const createPayment = async (req, res) => {
       });
     }
 
-    // Check if order is pending and can be paid
-    if (order.orderStatus !== 'pending') {
+    // Check if order is confirmed and can be paid
+    if (order.orderStatus !== 'confirmed') {
       return res.status(400).json({
         success: false,
         message: `Cannot create payment for order with status: ${order.orderStatus}`
